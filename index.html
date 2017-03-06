@@ -21,6 +21,8 @@
 <script src="tooltipster.bundle.min.js"></script>
 
 <script id="data">
+"use strict";
+
 var tagNames = {
 	'armor': 'Armor / Shield',
 	'damage': 'Damage +',
@@ -38,7 +40,7 @@ var tagNames = {
 	
 	'onhit': 'Effect on Hit',
 	'evade': 'Evade Damage',
-}
+};
 
 $.ajax('items.json').done(function (data) {
 
@@ -46,7 +48,7 @@ var items = JSON.parse(data);
 
 var tags = [];
 
-SIZE = "66px";
+var SIZE = "66px";
 var rarities = {};
 
 for (var i = 0; i < items.length; i++) {
@@ -72,7 +74,7 @@ for (var i = 0; i < items.length; i++) {
 		}
 	}
 	
-	var img = $('<img/>').attr({
+	$('<img/>').attr({
 		"width": SIZE,
 		"height": SIZE,
 		"src": item.image
@@ -110,7 +112,7 @@ function showTag (n) {
 		//$('.item').css('visibility', 'hidden');
 		//$('.item-tag-' + n).css('visibility', 'visible');
 		$('.item').css({
-			'opacity': .1,
+			'opacity': 0.1,
 			'pointer-events': 'none'
 		});
 		$('.item-tag-' + n).css({
@@ -131,7 +133,7 @@ function showFallbackTag () {
 function factoryShowTag (n) {
 	return function () {
 		showTag(n);
-	}
+	};
 }
 
 $('#showAllTags').click(function () {
@@ -152,6 +154,14 @@ tags.sort(function (a, b) {
 
 var fallbackTag = null;
 
+function tagBtnClickGenerator(n, btn) {
+	return function () {
+		$('.activetag').removeClass('activetag');
+		btn.addClass("activetag");
+		fallbackTag = n;
+	};
+}
+
 for (var i = 0; i < tags.length; i++) {
 	var n = tags[i];
 	var name = n;
@@ -163,13 +173,7 @@ for (var i = 0; i < tags.length; i++) {
 		.text(name)
 		.mouseenter(factoryShowTag(n))
 		.mouseleave(showFallbackTag)
-		.click((function (n, btn) {
-			return function () {
-				$('.activetag').removeClass('activetag');
-				btn.addClass("activetag");
-				fallbackTag = n;
-			}
-		})(n, tagbtn))
+		.click(tagBtnClickGenerator(n, tagbtn))
 		.appendTo('#taglist');
 }
 
