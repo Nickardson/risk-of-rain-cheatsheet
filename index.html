@@ -42,9 +42,9 @@ var tagNames = {
 	'evade': 'Evade Damage',
 };
 
-$.ajax('items.json').done(function (data) {
-
-var items = JSON.parse(data);
+$.ajax('items.json', {
+	"dataType": "json"
+}).done(function (items) {
 
 var tags = [];
 
