@@ -1,0 +1,183 @@
+<html>
+<head>
+
+<title>Risk of Rain Item Cheatsheet</title>
+
+<link rel="stylesheet" type="text/css" href="tooltipster.bundle.min.css"/>
+<link rel="stylesheet" type="text/css" href="style.css"/>
+</head>
+<body>
+
+<div id="tags">
+	<h1>Item Types</h1>
+	<a href="#" class="tag-button" id="showAllTags">Show All</a>
+	<div id="taglist"></div>
+	<p>Click a tag above to show items of that type.</p>
+</div>
+
+<pre id="result"></pre>
+
+<script src="jquery-3.1.1.min.js"></script>
+<script src="tooltipster.bundle.min.js"></script>
+
+<script id="data">
+"use strict";
+
+var tagNames = {
+	'armor': 'Armor / Shield',
+	'damage': 'Damage +',
+	'inflict': 'Additional Damage',
+	'onkill': 'Effect after Kill',
+	'onhurt': 'Effect when Hurt',
+	'speed': 'Speed / Mobility',
+	'regen': 'Health Regen',
+	'health': 'Health Max',
+	'minion': 'Minion Summon',
+	'crit': 'Criticals',
+	'money': 'Money / Items',
+	'halt': 'Slows / Stops Enemies',
+	'ability': 'Ability / Use items',
+	
+	'onhit': 'Effect on Hit',
+	'evade': 'Evade Damage',
+};
+
+$.ajax('items.json').done(function (data) {
+
+var items = JSON.parse(data);
+
+var tags = [];
+
+var SIZE = "66px";
+var rarities = {};
+
+for (var i = 0; i < items.length; i++) {
+	var item = items[i];
+
+	var c;
+	if (rarities[item.rarity]) {
+		c = rarities[item.rarity];
+	} else {
+		c = $('<div class="set set-'+item.rarity+'"></div>').appendTo("body");
+		c.prepend('<h3>'+item.rarity+' items</h3>');
+		rarities[item.rarity] = c;
+	}
+
+	var element = $('<a target="_blank" class="item">').attr('href', 'http://riskofrain.wikia.com/wiki/' + item.name).appendTo(c);
+
+	if (item.tags) {
+		for (var j = 0; j < item.tags.length; j++) {
+			element.addClass("item-tag-" + item.tags[j]);
+			if (tags.indexOf(item.tags[j]) == -1) {
+				tags.push(item.tags[j]);
+			}
+		}
+	}
+	
+	$('<img/>').attr({
+		"width": SIZE,
+		"height": SIZE,
+		"src": item.image
+	}).appendTo(element);
+
+	var tooltip = $('<span></span>');
+
+	$('<h2 class="item-name">').text(item.name).appendTo(tooltip);
+	$('<div class="item-effect">').text(item.effect).appendTo(tooltip);
+	$('<div class="item-stack">').text(item.stack).appendTo(tooltip);
+	$('<div class="item-unlock">').text(item.unlock).appendTo(tooltip);
+
+	if (item.maxstack)
+		$('<div class="item-maxstack">').text(item.maxstack).appendTo(element);
+
+	/*	else if (i == 3)
+			content.append('Each additional: <b class="item-'+$(this).text()+'">' + $(this).text() + '</b><br/><br/>');
+		else if (i == 5) {
+			content.append('<b class="item-'+$(this).text()+'">' + $(this).text() + '</b><br/><br/>');
+			img.addClass('container-'+$(this).text());
+		} else if (i > 1 && i < 5)
+			content.append('<i>' + $(this).text() + '</i><br/><br/>');
+	});*/
+
+	element.tooltipster({
+        content: tooltip,
+        delay: 0,
+        speed: 0,
+        maxWidth: 500
+    });
+}
+
+function showTag (n) {
+	if (n) {
+		//$('.item').css('visibility', 'hidden');
+		//$('.item-tag-' + n).css('visibility', 'visible');
+		$('.item').css({
+			'opacity': 0.1,
+			'pointer-events': 'none'
+		});
+		$('.item-tag-' + n).css({
+			'opacity': 'inherit',
+			'pointer-events': 'inherit'
+		});
+	} else {
+		//$('.item').css('visibility', 'visible');
+		$('.item').css({
+			'opacity': 'inherit',
+			'pointer-events': 'inherit'
+		});
+	}
+}
+function showFallbackTag () {
+	showTag(fallbackTag);
+}
+function factoryShowTag (n) {
+	return function () {
+		showTag(n);
+	};
+}
+
+$('#showAllTags').click(function () {
+	fallbackTag = null;
+	$('.activetag').removeClass('activetag');
+	showTag();
+}).mouseenter(factoryShowTag()).mouseleave(showFallbackTag);
+
+tags.sort(function (a, b) {
+	var a2 = a,
+		b2 = b;
+	if (tagNames[a])
+		a2 = tagNames[a];
+	if (tagNames[b])
+		b2 = tagNames[b];
+	return a2 > b2 ? 1 : -1;
+});
+
+var fallbackTag = null;
+
+function tagBtnClickGenerator(n, btn) {
+	return function () {
+		$('.activetag').removeClass('activetag');
+		btn.addClass("activetag");
+		fallbackTag = n;
+	};
+}
+
+for (var i = 0; i < tags.length; i++) {
+	var n = tags[i];
+	var name = n;
+	if (tagNames[n])
+		name = tagNames[n];
+
+	var tagbtn = $('<a class="tag-button" href="#">');
+	tagbtn
+		.text(name)
+		.mouseenter(factoryShowTag(n))
+		.mouseleave(showFallbackTag)
+		.click(tagBtnClickGenerator(n, tagbtn))
+		.appendTo('#taglist');
+}
+
+});
+</script>
+</body>
+</html>
