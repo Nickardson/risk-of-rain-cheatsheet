@@ -1,5 +1,9 @@
 # Risk of Rain cheatsheet
-For the game Risk of Rain.
-Shows how far items can stack, and shows the categories they fall into.
 
-See it in action at https://nickardson.github.io/risk-of-rain-cheatsheet/
+<https://risk-of-rain-cheatsheet.tgratzer.com/>
+
+[![Site Preview](.github/preview.png)](https://risk-of-rain-cheatsheet.tgratzer.com/)
+
+For the game [Risk of Rain](https://store.steampowered.com/app/248820/Risk_of_Rain/).
+
+Shows how far items can stack, and shows the categories they fall into.
